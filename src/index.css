@@ -66,3 +66,111 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+#root {
+  width: 100vw;
+  
+}
+
+html {
+  scroll-snap-type: y mandatory;
+  overflow-y: scroll;
+}
+
+#jumper {
+  position: sticky;
+  margin: 0 auto;
+  text-align: center;
+  width: 100%;
+  bottom: 0;
+  font-size: 30px;
+  cursor: pointer;
+}
+
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+}
+
+header {
+  text-align: center;
+  height: 100vh;
+  scroll-snap-align: start;
+}
+
+.textWrapper {
+  margin: 1rem 3rem 1rem 1rem;
+  width: 50%;
+  align-self: flex-end;
+  overflow-y: scroll;
+}
+
+.beerSection img {
+  width: 25%;
+  margin: 4rem;
+  position: absolute;
+}
+
+.beerSection {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  height: 100vh;
+  scroll-snap-align: start;
+}
+
+.red {
+  background-color: rgb(135, 8, 8);
+}
+
+.yellow {
+  background-color: rgb(89, 89, 0);
+}
+
+.blue {
+  background-color: rgb(10, 10, 121);
+}
+
+@media (width <= 700px) {
+  /* html {
+    scroll-snap-type: none;
+  } */
+
+  .textWrapper {
+    margin: 0rem 0rem 0rem 0rem;
+    width: 75%;
+    overflow-y: scroll;
+    align-self: center;
+    font-size: 125%;
+  }
+  
+  .beerSection img {
+    width: 75%;
+    margin: 1rem;
+    position: relative;
+    align-self: center;
+  }
+  
+  .beerSection {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: center;
+    width: 100%;
+    max-height: 100vh;
+    scroll-snap-align: start;
+  }
+
+  body {
+    margin: 0;
+    display: flex;
+    place-items: center;
+    min-width: 320px;
+    min-height: 100vh;
+  }
+}
