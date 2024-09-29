@@ -1,7 +1,7 @@
 // beerfacts.info?
 
 // import { useState } from 'react'
-import './App.css'
+// import './App.css'
 import BeerInfo from './components/BeerInfo.jsx'
 import Header from './components/Header.jsx'
 import beerStock from './assets/beerStock.jpg'
