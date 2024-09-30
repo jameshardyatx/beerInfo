@@ -9,7 +9,7 @@ function Object3D() {
     const scene = new THREE.Scene();
     // const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer();
+    const renderer = new THREE.WebGLRenderer({alpha : true});
 
     // Set renderer size to match the window size
     // renderer.setSize(window.innerWidth, window.innerHeight);
@@ -18,13 +18,11 @@ function Object3D() {
     const currentCanvas = canvasRef.current;
     currentCanvas.appendChild(renderer.domElement);
 
-    const renderSize = Math.floor(renderer.domElement.parentElement.parentElement.offsetWidth * .25);
+    let renderSize = Math.floor(renderer.domElement.parentElement.parentElement.offsetWidth * .25);
 
     renderer.domElement.parentElement.style.width = `${renderSize}px`;
     renderer.domElement.parentElement.style.height = `${renderSize}px`;
-    currentCanvas
-
-    // const renderSize = renderer.do
+    renderer.setSize(renderSize, renderSize);
 
     // Create a cube with geometry and material
     const geometry = new THREE.BoxGeometry(1, 1, 1);
@@ -63,6 +61,16 @@ function Object3D() {
     // Start the animation loop
     renderer.setAnimationLoop(animate);
 
+    const handleResize = () => {
+        renderSize = Math.floor(renderer.domElement.parentElement.parentElement.offsetWidth * .25);
+        renderer.domElement.parentElement.style.width = `${renderSize}px`;
+        renderer.domElement.parentElement.style.height = `${renderSize}px`;
+        renderer.setSize(renderSize, renderSize);
+        camera.updateProjectionMatrix();
+    }
+
+    window.addEventListener('resize', handleResize);
+
     // Cleanup on unmount
     return () => {
       renderer.setAnimationLoop(null); // Stop the animation loop
@@ -71,7 +79,7 @@ function Object3D() {
   }, []);
 
   return (
-    <div ref={canvasRef}></div>
+    <div ref={canvasRef} className="canvasWrapper"></div>
   );
 }
 

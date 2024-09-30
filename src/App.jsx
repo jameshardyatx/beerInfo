@@ -13,7 +13,7 @@ const beers = [
   {
     title: "Ales",
     text: [
-      "Ales are a type of beer made with yeast that prefers room-temperature environments. The yeast sits at the top of the fermenting vessel, so ales are also known as “top-fermented” beers. This is the opposite of lagers, which prefer cold temperatures and sit on the bottom of the vessel. Ales include a wide arrange of colors, aromas, and flavors but tend to lie on the heavier and darker side of flavor profiles.",
+      "Ales are a type of beer made with yeast that prefers room-temperature environments. The yeast sits at the top of the fermenting vessel, so ales are also known as “top-fermented” beers. This is the opposite of lager yeast, which prefer cold temperatures and sit on the bottom of the vessel. Ales include a wide arrange of colors, aromas, and flavors but tend to lie on the heavier and darker side of flavor profiles.",
     ],
     image: beerStock,
     color: "red",

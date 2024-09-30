@@ -110,13 +110,21 @@ header {
   text-align: center;
   height: 100vh;
   scroll-snap-align: start;
+  width: 75%;
+  margin: 0 auto;
+  scroll-snap-align: top;
+}
+
+header h1 {
+  padding-top: 4rem;
 }
 
 .textWrapper {
   margin: 1rem 3rem 1rem 1rem;
   width: 50%;
   /* align-self: flex-end; */
-  overflow-y: scroll;
+  overflow-y: auto;
+  max-height: 90vh;
 }
 
 .beerSection img {
@@ -125,9 +133,8 @@ header {
   /* position: absolute; */
 }
 
-.beerSection canvas {
-  width: 250px;
-
+.canvasWrapper {
+  margin: 4rem;
 }
 
 .beerSection {
@@ -153,15 +160,15 @@ header {
   background-color: rgb(10, 10, 121);
 }
 
-@media (width <= 700px) {
+@media (width <= 800px) {
   /* html {
     scroll-snap-type: none;
   } */
 
   .textWrapper {
-    margin: 0rem 0rem 0rem 0rem;
+    margin: 2rem 0rem 0rem 0rem;
     width: 75%;
-    overflow-y: scroll;
+    overflow-y: auto;
     align-self: center;
     font-size: 125%;
     max-height: 75%;
