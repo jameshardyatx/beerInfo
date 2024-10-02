@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 function Object3D() {
   const canvasRef = useRef(null);
@@ -11,6 +12,8 @@ function Object3D() {
     const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({alpha : true});
 
+
+
     // Set renderer size to match the window size
     // renderer.setSize(window.innerWidth, window.innerHeight);
 
@@ -18,51 +21,56 @@ function Object3D() {
     const currentCanvas = canvasRef.current;
     currentCanvas.appendChild(renderer.domElement);
 
-    let renderSize = Math.floor(renderer.domElement.parentElement.parentElement.offsetWidth * .25);
+    const sizeMultiplier = 0.35;
+    let renderSize = Math.floor(renderer.domElement.parentElement.parentElement.offsetWidth * sizeMultiplier);
 
     renderer.domElement.parentElement.style.width = `${renderSize}px`;
     renderer.domElement.parentElement.style.height = `${renderSize}px`;
     renderer.setSize(renderSize, renderSize);
 
     // Create a cube with geometry and material
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    const cube = new THREE.Mesh(geometry, material);
-    scene.add(cube);
+    // const geometry = new THREE.BoxGeometry(1, 1, 1);
+    // const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    // const cube = new THREE.Mesh(geometry, material);
+    // scene.add(cube);
 
-    // Set camera position
-    camera.position.z = 5;
+    const loader = new GLTFLoader();
 
-    // Animation variables
-    let increasing = true;
+    let model;
 
-    // Animation loop
-    function animate() {
-      cube.rotation.x += 0.01;
-      cube.rotation.y += 0.01;
+    loader.load( './src/assets/scene.gltf', function ( gltf ) {
 
-      // Adjust cube scaling
-      if (increasing) {
-        cube.scale.x += 0.01;
-        cube.scale.y += 0.01;
-        cube.scale.z += 0.01;
-      } else {
-        cube.scale.x -= 0.01;
-        cube.scale.y -= 0.01;
-        cube.scale.z -= 0.01;
-      }
+        model = gltf.scene;
+        scene.add( model );
+        model.scale.set(35,35,35);
+        model.position.set(0,-0.5,0);
 
-      if (cube.scale.x > 1.5) increasing = false;
-      if (cube.scale.x < 0.5) increasing = true;
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
+        directionalLight.position.set(5, 10, 7.5); // Set position of the light
+        scene.add(directionalLight);
 
-      renderer.render(scene, camera);
-    }
+        // Set camera position
+        camera.position.z = 5;
+        camera.position.y = 2;
 
-    // Start the animation loop
-    renderer.setAnimationLoop(animate);
+        // Animation loop
+        function animate() {
+            model.rotation.y += 0.01;
+            renderer.render(scene, camera);
+        }
+
+        // Start the animation loop
+        renderer.setAnimationLoop(animate);
+
+    }, undefined, function ( error ) {
+
+        console.error( error );
+
+    } );
 
     const handleResize = () => {
-        renderSize = Math.floor(renderer.domElement.parentElement.parentElement.offsetWidth * .25);
+        renderSize = Math.floor(renderer.domElement.parentElement.parentElement.offsetWidth * sizeMultiplier);
+        console.log(renderer.domElement.parentElement.parentElement);
         renderer.domElement.parentElement.style.width = `${renderSize}px`;
         renderer.domElement.parentElement.style.height = `${renderSize}px`;
         renderer.setSize(renderSize, renderSize);
