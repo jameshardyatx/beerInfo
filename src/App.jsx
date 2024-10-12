@@ -1,13 +1,9 @@
 // beerfacts.info?
 
-// import { useState } from 'react'
 // import './App.css'
 import BeerInfo from './components/BeerInfo.jsx'
 import Header from './components/Header.jsx'
 import beerStock from './assets/beerStock.jpg'
-// import * as THREE from 'three';
-
-// history.scrollRestoration = "manual";
 
 const beers = [
   {
@@ -88,20 +84,6 @@ const beers = [
   },
 ]
 
-// let beerPositions = [];
-// document.addEventListener("DOMContentLoaded", function() {
-//   let sections = document.getElementsByTagName("section");
-//   for (let i = 0; i < sections.length; i++) {
-//     beerPositions.push( sections[i].getBoundingClientRect().top | 0 );
-//   }
-//   console.log(beerPositions)
-// });
-
-// let currentPosition = 0;
-// const nextBeer = () => {
-//   window.scroll(0, beerPositions[currentPosition]);
-//   currentPosition = (currentPosition + 1) % beerPositions.length;
-// }
 
 function App() {
   // const [count, setCount] = useState(0)
@@ -119,7 +101,6 @@ function App() {
         />
       )
       )}
-    {/* <div id="jumper" className="noselect" onClick={nextBeer}>⬇️</div> */}
     </>
   );
 }

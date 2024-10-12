@@ -199,3 +199,20 @@ header h1 {
     min-height: 100vh;
   }
 }
+
+.isVisible {
+  color: white;
+  /* transition: color 2s; */
+}
+
+.isVisible h2 {
+ transition: color 1s;
+}
+
+.isVisible p {
+  transition: color 2s;
+}
+
+.invisible {
+  color: rgba(0,0,0,0);
+}
