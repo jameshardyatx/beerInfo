@@ -1,24 +1,23 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 import { PMREMGenerator } from 'three/src/extras/PMREMGenerator.js';
+import { div } from 'three/webgpu';
 
-function Object3D() {
-  const canvasRef = useRef(null);
+function Object3D(props) {
+    const canvasRef = useRef(null);
+    const modelRef = useRef(null);
 
   useEffect(() => {
-    // Set up the scene, camera, and renderer
     const scene = new THREE.Scene();
     // const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({alpha : true});
 
-
     // Set renderer size to match the window size
     // renderer.setSize(window.innerWidth, window.innerHeight);
 
-    // Append the renderer's canvas to the DOM element using ref
     const currentCanvas = canvasRef.current;
     currentCanvas.appendChild(renderer.domElement);
 
@@ -48,12 +47,14 @@ function Object3D() {
         model = gltf.scene;
         scene.add( model );
         model.scale.set(35,35,35);
-        model.position.set(0,-0.5,0);
+
         //z - left/right rotation
         //x - forward/back rotation
         //y - center rotation
-        
+        model.position.set(0, -0.5, 0);
 
+        modelRef.current = model;
+        
         const geometry = new THREE.BoxGeometry(1, 1, 1);
         const material = new THREE.MeshBasicMaterial({ color: 0x333333 });
         const cube = new THREE.Mesh(geometry, material);
@@ -107,7 +108,6 @@ function Object3D() {
             } else if (model.rotation.z < 0) {
                 model.rotation.z += 0.01;
             }
-            // console.log(model.rotation.x + " " + model.rotation.z);
             renderer.render(scene, camera);
         }
 
@@ -122,7 +122,7 @@ function Object3D() {
 
     const handleResize = () => {
         renderSize = Math.floor(renderer.domElement.parentElement.parentElement.offsetWidth * sizeMultiplier);
-        console.log(renderer.domElement.parentElement.parentElement);
+        //console.log(renderer.domElement.parentElement.parentElement);
         renderer.domElement.parentElement.style.width = `${renderSize}px`;
         renderer.domElement.parentElement.style.height = `${renderSize}px`;
         renderer.setSize(renderSize, renderSize);
@@ -194,6 +194,7 @@ function Object3D() {
         }
     });
 
+
     // Cleanup on unmount
     return () => {
       renderer.setAnimationLoop(null); // Stop the animation loop
@@ -201,8 +202,12 @@ function Object3D() {
     };
   }, []);
 
+
   return (
-    <div ref={canvasRef} className="canvasWrapper"></div>
+    <>
+        <div ref={canvasRef} className="canvasWrapper">
+        </div>
+    </>
   );
 }
 

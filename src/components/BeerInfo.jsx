@@ -13,7 +13,6 @@ const useElementOnScreen = (options) => {
     }
 
 
-
 useEffect(() => {
     const observer = new IntersectionObserver(callback, options);
     if (containerRef.current) {
@@ -27,16 +26,16 @@ useEffect(() => {
     }
   }, [containerRef, options]);
 
-  return [containerRef, isVisible]
+  return [containerRef, isVisible];
 }
 
 
 function BeerInfo(props) {
 
-    // const fadeOut = (event) => {
-    //     const element = event.target;
-    //     element.classList.add("fadeIn");
-    // }
+    const fadeOut = (event) => {
+        const element = event.target;
+        element.classList.add("fadeIn");
+    }
 
     const [containerRef, isVisible] = useElementOnScreen({
         root: null,
@@ -49,7 +48,9 @@ function BeerInfo(props) {
             
             {/* <img src={props.image} alt="" /> */}
             
-            <Object3D />
+            <Object3D 
+            visibility={isVisible}
+            />
             <div className={(isVisible ? "isVisible" : "invisible") + " textWrapper"}>
                 <h2>{props.title}</h2>
                 {props.text.map((text, index) => (
