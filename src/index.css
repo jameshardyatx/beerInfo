@@ -206,11 +206,11 @@ header h1 {
 }
 
 .isVisible h2 {
- transition: color 1s;
+ transition: color .5s;
 }
 
 .isVisible p {
-  transition: color 2s;
+  transition: color 1s;
 }
 
 .invisible {

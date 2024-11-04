@@ -51,7 +51,8 @@ function Object3D(props) {
         //z - left/right rotation
         //x - forward/back rotation
         //y - center rotation
-        model.position.set(0, -0.5, 0);
+        //model.position.set(0, -0.5, 0);
+        model.position.set(-5, -0.5, 0);
 
         modelRef.current = model;
         
@@ -88,6 +89,23 @@ function Object3D(props) {
             return Math.abs(v1 - v2) < epsilon;
         }
 
+        const sineWave = (base, amplitude, time, frequency) => {
+            return (
+                base + amplitude * Math.sin(time * frequency)
+            )
+        }
+
+        const cropCamera = (renderer, camera) => {
+            // use renderSize
+            let desiredSize = renderSize / 4;
+            const currentSize = renderer.getSize(new THREE.Vector2());
+            const x = (currentSize.x / 4) - (desiredSize / 4);
+            const y = (currentSize.y / 2) - (desiredSize / 2);
+            renderer.setSize(desiredSize, desiredSize, false);
+            camera.setViewOffset(currentSize.x, currentSize.y, x, y, desiredSize, desiredSize);
+        }
+
+        //let time = 0;
         function animate() {
             // Constant central rotation
             //model.rotation.y += 0.01;
@@ -108,6 +126,11 @@ function Object3D(props) {
             } else if (model.rotation.z < 0) {
                 model.rotation.z += 0.01;
             }
+
+            //cropCamera(renderer, camera);
+
+            //time += 1;
+
             renderer.render(scene, camera);
         }
 
@@ -201,6 +224,75 @@ function Object3D(props) {
       currentCanvas.removeChild(renderer.domElement); // Remove the canvas
     };
   }, []);
+
+//   useEffect(() => {
+
+//     let animationId;
+
+//     const animateSlideIn = (model, speed = 0.5, target = 0) => {
+//         const animate = () => {
+//             if(model.position.x < target) {
+//                 model.position.x += speed;
+//             }
+
+//             animationId = requestAnimationFrame(animate);
+            
+//         }
+//         animate();
+//     }
+
+//     if(modelRef.current) {
+//         if (props.visibility) {
+//             //modelRef.current.visible = props.visibility; // Hide/show the model
+//             //console.log(modelRef.current.visible);
+//             cancelAnimationFrame(animationId);
+//             modelRef.current.position.x = -5;
+//             animateSlideIn(modelRef.current);
+//             console.log("slide in");
+//         } else {
+//             cancelAnimationFrame(animationId);
+//             modelRef.current.position.x = -5;
+//             console.log("position reset");
+//         }
+//     }
+    
+// }, [props.visibility]);
+
+useEffect(() => {
+    let animationFrameId;
+
+    const animateSlideIn = (model, duration = 250, target = 0) => {
+        const startPosition = -10;
+        const startTime = performance.now();
+
+        const animate = (currentTime) => {
+            const elapsedTime = currentTime - startTime;
+            const progress = Math.min(elapsedTime / duration, 1); // Clamp progress to 1
+
+            // Update position based on progress
+            model.position.x = startPosition + progress * (target - startPosition);
+
+            if (progress < 1) {
+                animationFrameId = requestAnimationFrame(animate);
+            }
+        };
+
+        animationFrameId = requestAnimationFrame(animate);
+    };
+
+    if (modelRef.current) {
+        if (props.visibility) {
+            modelRef.current.position.x = -10; // Reset position
+            animateSlideIn(modelRef.current);  // Start animation
+        } else {
+            cancelAnimationFrame(animationFrameId); // Stop animation if hidden
+            modelRef.current.position.x = -10;  // Reset for next visibility
+        }
+    }
+
+    return () => cancelAnimationFrame(animationFrameId); // Clean up on unmount
+}, [props.visibility]);
+
 
 
   return (
