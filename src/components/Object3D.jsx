@@ -13,7 +13,8 @@ function Object3D(props) {
     const scene = new THREE.Scene();
     // const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({alpha : true});
+    const renderer = new THREE.WebGLRenderer({alpha : true}, {antialias: true});
+    renderer.setPixelRatio( window.devicePixelRatio * 1.5 );
 
     // Set renderer size to match the window size
     // renderer.setSize(window.innerWidth, window.innerHeight);
@@ -42,19 +43,28 @@ function Object3D(props) {
     const pmremGenerator = new THREE.PMREMGenerator(renderer);
     pmremGenerator.compileEquirectangularShader();
 
-    loader.load( './src/assets/scene.gltf', function ( gltf ) {
+    //loader.load( './src/assets/scene.gltf', function ( gltf ) {
+    loader.load( './src/assets/stein.glb', function ( gltf ) {
 
         model = gltf.scene;
         scene.add( model );
-        model.scale.set(35,35,35);
+        model.scale.set(20,20,20);
+
+        const liquid = model.getObjectByName("liquid");
+        const foam = model.getObjectByName("foam");
+        liquid.morphTargetInfluences[0] = 1;
+        foam.morphTargetInfluences[0] = 1;
+        liquid.visible = false;
+        foam.visible = false;
 
         //z - left/right rotation
         //x - forward/back rotation
         //y - center rotation
         //model.position.set(0, -0.5, 0);
-        model.position.set(-5, -0.5, 0);
+        model.position.set(-10, -0.5, 0);
 
         modelRef.current = model;
+        
         
         const geometry = new THREE.BoxGeometry(1, 1, 1);
         const material = new THREE.MeshBasicMaterial({ color: 0x333333 });
@@ -108,7 +118,7 @@ function Object3D(props) {
         //let time = 0;
         function animate() {
             // Constant central rotation
-            //model.rotation.y += 0.01;
+            //model.rotation.y -= 0.01;
             
             // Regulates the x and z rotation back to 0 gently
             if(almostEqual(model.rotation.x, 0)) {
@@ -280,10 +290,59 @@ useEffect(() => {
         animationFrameId = requestAnimationFrame(animate);
     };
 
+    const fillGlass = (model, duration) => {
+        
+        const liquid = model.getObjectByName("liquid");
+        const foam = model.getObjectByName("foam");
+        liquid.visible = true;
+        foam.visible = false;
+
+        const raiseLiquid = () => {
+            let startTime = performance.now();
+
+            const animateLiquid = () => {
+                let elapsed = performance.now() - startTime;
+                let progress = Math.min(elapsed / duration, 1);
+                liquid.morphTargetInfluences[0] = 1 - progress;
+
+                if(progress < 1) {
+                    requestAnimationFrame(animateLiquid);
+                } else {
+                    foam.visible = true;
+                    foam.morphTargetInfluences[0] = 1;
+                    raiseFoam();
+                }
+            };
+            animateLiquid();
+        };
+
+        const raiseFoam = () => {
+            let startTime = performance.now();
+
+            const animateFoam = () => {
+                let elapsed = performance.now() - startTime;
+                let progress = Math.min(elapsed / (duration / 5), 1);
+                foam.morphTargetInfluences[0] = 1 - progress;
+    
+                if(progress < 1) {
+                    requestAnimationFrame(animateFoam);
+                }
+            };
+
+            animateFoam();
+        }
+        raiseLiquid();
+        
+        //foam.visible = true;
+        //liquid.morphTargetInfluences[0] = 0;
+        //foam.morphTargetInfluences[0] = 0;
+    };
+
     if (modelRef.current) {
         if (props.visibility) {
             modelRef.current.position.x = -10; // Reset position
             animateSlideIn(modelRef.current);  // Start animation
+            fillGlass(modelRef.current, 2000);
         } else {
             cancelAnimationFrame(animationFrameId); // Stop animation if hidden
             modelRef.current.position.x = -10;  // Reset for next visibility
