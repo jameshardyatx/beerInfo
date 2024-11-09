@@ -13,6 +13,7 @@ const beers = [
     ],
     image: beerStock,
     color: "red",
+    glass: "stein.glb",
   },
   {
     title: "Cream Ale",
@@ -21,6 +22,7 @@ const beers = [
     ],
     image: beerStock,
     color: "blue",
+    glass: "pint.glb",
   },
   {
     title: "Pale Ale",
@@ -33,6 +35,7 @@ const beers = [
     ],
     image: beerStock,
     color: "yellow",
+    glass: "pint.glb",
   },
   {
     title: "Lagers",
@@ -41,6 +44,7 @@ const beers = [
     ],
     image: beerStock,
     color: "red",
+    glass: "pint.glb",
   },
   {
     title: "Pale Lager",
@@ -49,6 +53,7 @@ const beers = [
     ],
     image: beerStock,
     color: "blue",
+    glass: "pint.glb",
   },
   {
     title: "Pilsner",
@@ -57,6 +62,7 @@ const beers = [
     ],
     image: beerStock,
     color: "yellow",
+    glass: "pint.glb",
   },
   {
     title: "Red Lager",
@@ -65,6 +71,7 @@ const beers = [
     ],
     image: beerStock,
     color: "red",
+    glass: "pint.glb",
   },
   {
     title: "Dark Lager",
@@ -73,6 +80,7 @@ const beers = [
     ],
     image: beerStock,
     color: "blue",
+    glass: "pint.glb",
   },
   {
     title: "Kölsch",
@@ -81,6 +89,7 @@ const beers = [
     ],
     image: beerStock,
     color: "blue",
+    glass: "pint.glb",
   },
 ]
 
@@ -98,6 +107,7 @@ function App() {
         text={beers.text}
         image={beers.image}
         color={beers.color}
+        glass={beers.glass}
         />
       )
       )}

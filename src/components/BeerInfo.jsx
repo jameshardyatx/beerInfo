@@ -50,6 +50,7 @@ function BeerInfo(props) {
             
             <Object3D 
             visibility={isVisible}
+            glass={props.glass}
             />
             <div className={(isVisible ? "isVisible" : "invisible") + " textWrapper"}>
                 <h2>{props.title}</h2>

@@ -8,6 +8,7 @@ import { div } from 'three/webgpu';
 function Object3D(props) {
     const canvasRef = useRef(null);
     const modelRef = useRef(null);
+    const glassInitialX = -15;
 
   useEffect(() => {
     const scene = new THREE.Scene();
@@ -22,7 +23,7 @@ function Object3D(props) {
     const currentCanvas = canvasRef.current;
     currentCanvas.appendChild(renderer.domElement);
 
-    const sizeMultiplier = 0.35;
+    const sizeMultiplier = 0.4;
     let renderSize = Math.floor(renderer.domElement.parentElement.parentElement.offsetWidth * sizeMultiplier);
 
     renderer.domElement.parentElement.style.width = `${renderSize}px`;
@@ -43,8 +44,9 @@ function Object3D(props) {
     const pmremGenerator = new THREE.PMREMGenerator(renderer);
     pmremGenerator.compileEquirectangularShader();
 
-    //loader.load( './src/assets/scene.gltf', function ( gltf ) {
-    loader.load( './src/assets/stein.glb', function ( gltf ) {
+    const modelFilename = "./src/assets/" + props.glass;
+
+    loader.load( modelFilename, function ( gltf ) {
 
         model = gltf.scene;
         scene.add( model );
@@ -57,11 +59,14 @@ function Object3D(props) {
         liquid.visible = false;
         foam.visible = false;
 
+        //change color based on the beer
+        //liquid.material.color.set(0xff0000);
+
         //z - left/right rotation
         //x - forward/back rotation
         //y - center rotation
         //model.position.set(0, -0.5, 0);
-        model.position.set(-10, -0.5, 0);
+        model.position.set(glassInitialX, -0.5, 0);
 
         modelRef.current = model;
         
@@ -139,12 +144,9 @@ function Object3D(props) {
 
             //cropCamera(renderer, camera);
 
-            //time += 1;
-
             renderer.render(scene, camera);
         }
 
-        // Start the animation loop
         renderer.setAnimationLoop(animate);
 
     }, undefined, function ( error ) {
@@ -155,7 +157,6 @@ function Object3D(props) {
 
     const handleResize = () => {
         renderSize = Math.floor(renderer.domElement.parentElement.parentElement.offsetWidth * sizeMultiplier);
-        //console.log(renderer.domElement.parentElement.parentElement);
         renderer.domElement.parentElement.style.width = `${renderSize}px`;
         renderer.domElement.parentElement.style.height = `${renderSize}px`;
         renderer.setSize(renderSize, renderSize);
@@ -172,7 +173,6 @@ function Object3D(props) {
     const handleMouseMove = (event) => {
         newMouseX = event.clientX;
         newMouseY = event.clientY;
-        // console.log("x: " + newMouseX + " y: " + newMouseY);
         if(newMouseX > initialMouseX && model.rotation.z < 0.5) {
             model.rotation.z += 0.02;
         } else if (newMouseX < initialMouseX && model.rotation.z > -0.5) {
@@ -235,41 +235,10 @@ function Object3D(props) {
     };
   }, []);
 
-//   useEffect(() => {
-
-//     let animationId;
-
-//     const animateSlideIn = (model, speed = 0.5, target = 0) => {
-//         const animate = () => {
-//             if(model.position.x < target) {
-//                 model.position.x += speed;
-//             }
-
-//             animationId = requestAnimationFrame(animate);
-            
-//         }
-//         animate();
-//     }
-
-//     if(modelRef.current) {
-//         if (props.visibility) {
-//             //modelRef.current.visible = props.visibility; // Hide/show the model
-//             //console.log(modelRef.current.visible);
-//             cancelAnimationFrame(animationId);
-//             modelRef.current.position.x = -5;
-//             animateSlideIn(modelRef.current);
-//             console.log("slide in");
-//         } else {
-//             cancelAnimationFrame(animationId);
-//             modelRef.current.position.x = -5;
-//             console.log("position reset");
-//         }
-//     }
-    
-// }, [props.visibility]);
-
 useEffect(() => {
-    let animationFrameId;
+    let slideInFrameId;
+    let animateLiquidFrameId;
+    let animateFoamFrameId;
 
     const animateSlideIn = (model, duration = 250, target = 0) => {
         const startPosition = -10;
@@ -283,11 +252,11 @@ useEffect(() => {
             model.position.x = startPosition + progress * (target - startPosition);
 
             if (progress < 1) {
-                animationFrameId = requestAnimationFrame(animate);
+                slideInFrameId = requestAnimationFrame(animate);
             }
         };
 
-        animationFrameId = requestAnimationFrame(animate);
+        slideInFrameId = requestAnimationFrame(animate);
     };
 
     const fillGlass = (model, duration) => {
@@ -306,7 +275,7 @@ useEffect(() => {
                 liquid.morphTargetInfluences[0] = 1 - progress;
 
                 if(progress < 1) {
-                    requestAnimationFrame(animateLiquid);
+                    animateLiquidFrameId = requestAnimationFrame(animateLiquid);
                 } else {
                     foam.visible = true;
                     foam.morphTargetInfluences[0] = 1;
@@ -321,35 +290,38 @@ useEffect(() => {
 
             const animateFoam = () => {
                 let elapsed = performance.now() - startTime;
-                let progress = Math.min(elapsed / (duration / 5), 1);
+                let progress = Math.min(elapsed / (duration / 2), 1);
                 foam.morphTargetInfluences[0] = 1 - progress;
     
                 if(progress < 1) {
-                    requestAnimationFrame(animateFoam);
+                    animateFoamFrameId = requestAnimationFrame(animateFoam);
                 }
             };
 
             animateFoam();
         }
         raiseLiquid();
-        
-        //foam.visible = true;
-        //liquid.morphTargetInfluences[0] = 0;
-        //foam.morphTargetInfluences[0] = 0;
     };
 
     if (modelRef.current) {
         if (props.visibility) {
-            modelRef.current.position.x = -10; // Reset position
-            animateSlideIn(modelRef.current);  // Start animation
-            fillGlass(modelRef.current, 2000);
+            modelRef.current.position.x = glassInitialX;
+            animateSlideIn(modelRef.current);
+            fillGlass(modelRef.current, 1000);
         } else {
-            cancelAnimationFrame(animationFrameId); // Stop animation if hidden
-            modelRef.current.position.x = -10;  // Reset for next visibility
+            cancelAnimationFrame(slideInFrameId);
+            cancelAnimationFrame(animateLiquidFrameId);
+            cancelAnimationFrame(animateFoamFrameId);
+
+            modelRef.current.position.x = glassInitialX;
         }
     }
 
-    return () => cancelAnimationFrame(animationFrameId); // Clean up on unmount
+    return () => {
+        cancelAnimationFrame(slideInFrameId);
+        cancelAnimationFrame(animateLiquidFrameId);
+        cancelAnimationFrame(animateFoamFrameId);
+    } // Clean up on unmount
 }, [props.visibility]);
 
 
