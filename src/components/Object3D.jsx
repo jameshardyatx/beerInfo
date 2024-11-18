@@ -156,9 +156,12 @@ function Object3D(props) {
     } );
 
     const handleResize = () => {
-        renderSize = Math.floor(renderer.domElement.parentElement.parentElement.offsetWidth * sizeMultiplier);
-        renderer.domElement.parentElement.style.width = `${renderSize}px`;
-        renderer.domElement.parentElement.style.height = `${renderSize}px`;
+        //console.log(renderer);
+        renderSize = Math.floor(canvasRef.current.parentElement.offsetWidth * sizeMultiplier);
+        //renderer.domElement.parentElement.style.width = `${renderSize}px`;
+        canvasRef.current.style.width = `${renderSize}px`;
+        //renderer.domElement.parentElement.style.height = `${renderSize}px`;
+        canvasRef.current.style.height = `${renderSize}px`;
         renderer.setSize(renderSize, renderSize);
         camera.updateProjectionMatrix();
     }
@@ -171,6 +174,10 @@ function Object3D(props) {
     let newMouseY = 0;
 
     const handleMouseMove = (event) => {
+        if(!modelRef.current) {
+            return;
+        }
+        
         newMouseX = event.clientX;
         newMouseY = event.clientY;
         if(newMouseX > initialMouseX && model.rotation.z < 0.5) {
